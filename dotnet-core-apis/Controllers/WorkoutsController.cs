@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using dotnet_core_apis.Models;
 using dotnet_core_apis.Repositories;
 using Microsoft.AspNetCore.Mvc;
