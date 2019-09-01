@@ -1,4 +1,6 @@
-﻿using dotnet_core_apis.Repositories;
+﻿using dotnet_core_apis.Filters;
+using dotnet_core_apis.Repositories;
+using dotnet_core_apis.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +22,10 @@ namespace dotnet_core_apis
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<SecondLevelClass>();
+
+            services.AddScoped<LoggingResultFilter>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddCors(options => options.AddPolicy("AllowAll",

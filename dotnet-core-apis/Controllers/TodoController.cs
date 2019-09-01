@@ -1,4 +1,5 @@
-﻿using dotnet_core_apis.Models;
+﻿using dotnet_core_apis.Filters;
+using dotnet_core_apis.Models;
 using dotnet_core_apis.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 namespace dotnet_core_apis.Controllers
 {
     [Route("api/[controller]")]
+    [ServiceFilter(typeof(LoggingResultFilter))]
     public class TodoController : Controller
     {
         private static TodoRepository _todoRepository;
