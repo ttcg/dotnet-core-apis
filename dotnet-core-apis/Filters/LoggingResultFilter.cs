@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace dotnet_core_apis.Filters
@@ -20,27 +22,47 @@ namespace dotnet_core_apis.Filters
 
         public void OnResultExecuting(ResultExecutingContext context)
         {
-            {
-                var controller = ((Microsoft.AspNetCore.Mvc.ControllerBase)context.Controller).ControllerContext;
-                _logger.LogInformation("{controller} | {action} | {result}",
+        }
+
+        public void OnResultExecuted(ResultExecutedContext context)
+        {
+            {       
+                var controller = ((ControllerBase)context.Controller).ControllerContext;
+
+                _logger.LogInformation("{method} | {controller} | {action} | {result} | {model}",
+                    controller.HttpContext.Request.Method,
                     controller.ActionDescriptor.ControllerName,
-                    controller.ActionDescriptor.ActionName,
-                    GetResult(context.Result));
+                    controller.ActionDescriptor.ActionName,                    
+                    GetResult(context.Result),
+                    GetModel(controller.HttpContext.Request.Body)
+                );
+            }
+
+            string GetModel(Stream stream)
+            {
+                if (stream is Microsoft.AspNetCore.WebUtilities.FileBufferingReadStream)
+                {
+                    var model = string.Empty;
+                    stream.Position = 0;
+                    using (var reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        model = reader.ReadToEnd();
+                        return model;
+                    }
+                }
+
+                return null;
             }
 
             string GetResult(IActionResult result)
             {
                 if (result is ObjectResult)
                     return JsonConvert.SerializeObject(((ObjectResult)context.Result).Value);
-                
-                return result.ToString();
-                //return string.Empty;
+
+                return GetResultName(result);
             }
-        }
 
-        public void OnResultExecuted(ResultExecutedContext context)
-        {
-
+            string GetResultName(IActionResult result) => result.ToString().Split('.').LastOrDefault();
         }
     }
 }
